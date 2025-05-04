@@ -17,6 +17,8 @@ spec:
       containers:
       - name: {{ .Topology.Producer.Name }}
         image: nginx
+        commands: {{ .Topology.Producer.Spec.Commands }}
+        args: {{ .Topology.Producer.Spec.Args }}
         ports:
         - containerPort: {{ .Topology.Producer.Spec.Port }}
 {{- if .Topology.Producer.Spec.AntiAffinity }}

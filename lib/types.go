@@ -5,6 +5,8 @@ type TopologySpec struct {
 	Replicas     int                 `yaml:"replicas"`
 	AntiAffinity bool                `yaml:"antiAffinity"`
 	TopologyKeys []map[string]string `yaml:"topologyKeys"`
+	Args         []map[string]string `yaml:"args"`
+	Commands     []map[string]string `yaml:"commands"`
 	HostNetwork  bool                `yaml:"hostNetwork"`
 }
 

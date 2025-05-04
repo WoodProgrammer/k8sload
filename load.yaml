@@ -1,0 +1,31 @@
+topology:
+  producer:
+    name: producer
+    namespace: producer
+    spec:
+      hostNetwork: true
+      port: 8080
+      replicas: 2
+      command: []
+      args: []
+      antiAffinity: true
+      topologyKeys:
+      - app: nginx
+      nodeSelector:
+        node: node-two
+      nodeAffinityRules:
+        az: us-west-1a
+
+  consumer:
+    name: consumer
+    namespace: consumer
+    spec:
+      port: 8080
+      replicas: 1
+      antiAffinity: false
+      # topologyKeys:
+      # - app: nginx
+      nodeSelector:
+        node: node-one
+      nodeAffinityRules:
+        az: us-west-1b
