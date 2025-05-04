@@ -23,8 +23,8 @@ topology:
       port: 8080
       replicas: 1
       antiAffinity: false
-      # topologyKeys:
-      # - app: nginx
+      topologyKeys:
+      - app: nginx
       nodeSelector:
         node: node-one
       nodeAffinityRules:
