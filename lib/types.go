@@ -5,6 +5,7 @@ type TopologySpec struct {
 	Replicas     int                 `yaml:"replicas"`
 	AntiAffinity bool                `yaml:"antiAffinity"`
 	TopologyKeys []map[string]string `yaml:"topologyKeys"`
+	HostNetwork  bool                `yaml:"hostNetwork"`
 }
 
 type Producer struct {

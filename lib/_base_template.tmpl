@@ -13,6 +13,7 @@ spec:
       labels:
         app: {{ .Topology.Producer.Name }}
     spec:
+      hostNetwork:  {{ .Topology.Producer.Spec.HostNetwork }}
       containers:
       - name: {{ .Topology.Producer.Name }}
         image: nginx
