@@ -18,8 +18,15 @@ type Producer struct {
 
 type Topology struct {
 	Producer Producer `yaml:"producer"`
+	Consumer Consumer `yaml:"consumer"`
 }
 
 type Config struct {
 	Topology Topology `yaml:"topology"`
+}
+
+type Consumer struct {
+	Name      string       `yaml:"name"`
+	Namespace string       `yaml:"namespace"`
+	Spec      TopologySpec `yaml:"spec"`
 }

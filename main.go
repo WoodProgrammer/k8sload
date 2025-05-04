@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	lib "github.com/WoodProgrammer/k8sload/lib"
@@ -34,16 +35,17 @@ func NewKubernetesClient() lib.KubernetesClient {
 func main() {
 	log.Info().Msg("k8load v0.0.1")
 
-	k8sClient := NewKubernetesClient()
+	//gk8sClient := NewKubernetesClient()
 	output, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template.tmpl")
 
 	if err != nil {
 		log.Err(err).Msg("Error while running lib.GenerateManifestFile()")
 		os.Exit(1)
 	}
-	err = k8sClient.ApplyManifest(output)
+	fmt.Println(output)
+	/*err = k8sClient.ApplyManifest(output)
 	if err != nil {
 		log.Err(err).Msg("Error while running k8sClient.ApplyManifest()")
 		os.Exit(1)
-	}
+	}*/
 }

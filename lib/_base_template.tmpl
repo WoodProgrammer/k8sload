@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,6 +29,46 @@ spec:
           - labelSelector:
               matchExpressions:
 {{- range $keyVal := .Topology.Producer.Spec.TopologyKeys }}
+                {{- range $key, $val := $keyVal }}
+              - key: {{ $key }}
+                operator: In
+                values:
+                - {{ $val }}
+                {{- end }}
+{{- end }}
+            topologyKey: "kubernetes.io/hostname"
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Topology.Consumer.Name }}
+  namespace: {{ .Topology.Consumer.Namespace }}
+spec:
+  replicas: {{ .Topology.Consumer.Spec.Replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Topology.Consumer.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Topology.Consumer.Name }}
+    spec:
+      hostNetwork:  {{ .Topology.Consumer.Spec.HostNetwork }}
+      containers:
+      - name: {{ .Topology.Consumer.Name }}
+        image: nginx
+        commands: {{ .Topology.Consumer.Spec.Commands }}
+        args: {{ .Topology.Consumer.Spec.Args }}
+        ports:
+        - containerPort: {{ .Topology.Consumer.Spec.Port }}
+{{- if .Topology.Consumer.Spec.AntiAffinity }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+{{- range $keyVal := .Topology.Consumer.Spec.TopologyKeys }}
                 {{- range $key, $val := $keyVal }}
               - key: {{ $key }}
                 operator: In
