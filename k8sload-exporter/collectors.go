@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"os"
-	"reflect"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog/log"
@@ -21,53 +18,56 @@ func (c *IPerfCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *IPerfCollector) Collect(ch chan<- prometheus.Metric) {
+	var intervals []Intervals
 	data, err := c.ParseMetricFile("metrics.json")
 
 	if err != nil {
 		log.Err(err).Msg("Error while parsing metrics file")
 	}
-	for _, v := range data.Intervals {
-		for _, i := range v.Streams {
-			var iperfMetric bytes.Buffer
-			enc := gob.NewEncoder(&iperfMetric)
-			err := enc.Encode(i)
-			if err != nil {
-				log.Err(err).Msg("encode error:")
-			}
+	var mainJson map[string]interface{}
+	if err := json.Unmarshal(data, &mainJson); err != nil {
+		log.Err(err).Msg("json.Unmarshal:")
+	}
 
-			fields := reflect.VisibleFields(reflect.TypeOf(i))
-
-			b, err := json.Marshal(i)
+	for k, v := range mainJson {
+		term := 0
+		if k == "intervals" {
+			b, err := json.Marshal(v)
 			if err != nil {
 				panic(err)
 			}
-
-			for _, f := range fields {
-				var parsed map[string]interface{}
-				if err := json.Unmarshal(b, &parsed); err != nil {
-					log.Err(err).Msg("json.Unmarshal:")
-				}
-				fmt.Println("oc ", f.Name)
-				fmt.Println(parsed["rtt"])
-
+			if err := json.Unmarshal(b, &intervals); err != nil {
+				log.Err(err).Msg("json.Unmarshal:")
 			}
+			for _, s := range intervals {
 
+				for _, t := range s.Streams {
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Bytes), fmt.Sprintf("bytes_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.BitsPerSecond), fmt.Sprintf("bits_per_second_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.End), fmt.Sprintf("end_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.PMTU), fmt.Sprintf("pmtu_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.RTT), fmt.Sprintf("rtt_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Retransmits), fmt.Sprintf("retransmits_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Seconds), fmt.Sprintf("seconds_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.SndCwd), fmt.Sprintf("sndcwd_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.SndWnd), fmt.Sprintf("sndwnd_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Socket), fmt.Sprintf("sockets_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Start), fmt.Sprintf("start_streams_term_%d", term))
+
+					fmt.Println(term)
+				}
+				term = term + 1
+			}
 		}
 	}
 }
 
-func (c *IPerfCollector) ParseMetricFile(metricFile string) (Metric, error) {
-	var metric Metric
+func (c *IPerfCollector) ParseMetricFile(metricFile string) ([]byte, error) {
 	file, err := os.ReadFile(metricFile)
 	if err != nil {
 		log.Err(err).Msg("There is and error while reading file")
-		return metric, err
-	}
-	err = json.Unmarshal(file, &metric)
-	if err != nil {
-		log.Err(err).Msg("Error while unmarshaling")
-		return metric, err
+		return nil, err
 	}
 
-	return metric, err
+	return file, err
 }
