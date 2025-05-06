@@ -2,49 +2,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Topology.Producer.Name }}
-  namespace: {{ .Topology.Producer.Namespace }}
-spec:
-  replicas: {{ .Topology.Producer.Spec.Replicas }}
-  selector:
-    matchLabels:
-      app: {{ .Topology.Producer.Name }}
-  template:
-    metadata:
-      labels:
-        app: {{ .Topology.Producer.Name }}
-    spec:
-      hostNetwork:  {{ .Topology.Producer.Spec.HostNetwork }}
-      containers:
-      - name: {{ .Topology.Producer.Name }}
-        image: nginx
-        command: {{ .Topology.Producer.Spec.Commands }}
-        args:
-        {{- range $keyVal := .Topology.Producer.Spec.Args }}
-        - "{{ $keyVal }}"
-        {{- end }}
-        ports:
-        - containerPort: {{ .Topology.Producer.Spec.Port }}
-{{- if .Topology.Producer.Spec.AntiAffinity }}
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-{{- range $keyVal := .Topology.Producer.Spec.TopologyKeys }}
-                {{- range $key, $val := $keyVal }}
-              - key: {{ $key }}
-                operator: In
-                values:
-                - {{ $val }}
-                {{- end }}
-{{- end }}
-            topologyKey: "kubernetes.io/hostname"
-{{- end }}
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: {{ .Topology.Consumer.Name }}
   namespace: {{ .Topology.Consumer.Namespace }}
 spec:

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	lib "github.com/WoodProgrammer/k8sload/lib"
@@ -33,19 +32,25 @@ func NewKubernetesClient() lib.KubernetesClient {
 }
 
 func main() {
+	var manifestArr []string
 	log.Info().Msg("k8load v0.0.1")
 
 	k8sClient := NewKubernetesClient()
-	output, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template.tmpl")
+	ProducerManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_producer.tmpl")
+	manifestArr = append(manifestArr, ProducerManifest)
+	ConsumerManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_consumer.tmpl")
+	manifestArr = append(manifestArr, ConsumerManifest)
 
-	if err != nil {
-		log.Err(err).Msg("Error while running lib.GenerateManifestFile()")
-		os.Exit(1)
-	}
-	fmt.Println(output)
-	err = k8sClient.ApplyManifest(output)
-	if err != nil {
-		log.Err(err).Msg("Error while running k8sClient.ApplyManifest()")
-		os.Exit(1)
+	for _, r := range manifestArr {
+		if err != nil {
+			log.Err(err).Msg("Error while running lib.GenerateManifestFile() ")
+			os.Exit(1)
+		}
+
+		err = k8sClient.ApplyManifest(r)
+		if err != nil {
+			log.Err(err).Msg("Error while running k8sClient.ApplyManifest()")
+			os.Exit(1)
+		}
 	}
 }
