@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"sync"
 
 	lib "github.com/WoodProgrammer/k8sload/lib"
 	"github.com/rs/zerolog/log"
@@ -34,6 +35,10 @@ func NewKubernetesClient() lib.KubernetesClient {
 func main() {
 	var manifestArr []string
 	log.Info().Msg("k8load v0.0.1")
+	maxConcurrency := 2
+
+	var wg sync.WaitGroup
+	semaphore := make(chan struct{}, maxConcurrency)
 
 	k8sClient := NewKubernetesClient()
 	ProducerManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_producer.tmpl")
@@ -42,15 +47,24 @@ func main() {
 	manifestArr = append(manifestArr, ConsumerManifest)
 
 	for _, r := range manifestArr {
-		if err != nil {
-			log.Err(err).Msg("Error while running lib.GenerateManifestFile() ")
-			os.Exit(1)
-		}
+		wg.Add(1)
+		semaphore <- struct{}{} // acquire a token
 
-		err = k8sClient.ApplyManifest(r)
-		if err != nil {
-			log.Err(err).Msg("Error while running k8sClient.ApplyManifest()")
-			os.Exit(1)
-		}
+		go func(manifest string) {
+			defer wg.Done()
+			defer func() { <-semaphore }() // release token
+
+			if err != nil {
+				log.Err(err).Msg("Error while running lib.GenerateManifestFile() ")
+				os.Exit(1)
+			}
+
+			err = k8sClient.ApplyManifest(r)
+			if err != nil {
+				log.Err(err).Msg("Error while running k8sClient.ApplyManifest()")
+				os.Exit(1)
+			}
+		}(r)
 	}
+	wg.Wait()
 }
