@@ -2,6 +2,7 @@ package lib
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -24,15 +25,15 @@ type KubernetesHandler struct {
 }
 
 func (k *KubernetesHandler) ApplyManifest(manifestDetails string) error {
-	manifestBytes := []byte(manifestDetails)
 
+	manifestBytes := []byte(manifestDetails)
 	decUnstructured := yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
 	obj := &unstructured.Unstructured{}
 	_, gvk, err := decUnstructured.Decode(manifestBytes, nil, obj)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("The object is ", obj)
 	mapping, err := restMapper(k.Config).RESTMapping(gvk.GroupKind(), gvk.Version)
 	if err != nil {
 		return err
@@ -54,6 +55,7 @@ func (k *KubernetesHandler) ApplyManifest(manifestDetails string) error {
 	}
 
 	log.Info().Msg("Manifest applied successfully.")
+
 	return nil
 }
 

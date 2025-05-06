@@ -6,8 +6,8 @@ topology:
       hostNetwork: true
       port: 8080
       replicas: 2
-      command: []
-      args: []
+      exporterImage: nginx
+      image: nginx
       antiAffinity: true
       topologyKeys:
       - app: nginx
@@ -22,6 +22,10 @@ topology:
     spec:
       port: 8080
       replicas: 1
+      command: ["iperf3"]
+      args: ["-c", "localhost", "-p", "3000", "-J", ">", "metrics.json"]
+      exporterImage: nginx
+      image: nginx
       antiAffinity: false
       topologyKeys:
       - app: nginx
