@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Main Docker Image
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - build
 
 jobs:
-  build-and-push:
+  build-and-push-main-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          file: k8sload-exporter/Dockerfile
-          context: k8sload-exporter
+          file: Dockerfile
+          context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/k8sload:latest
