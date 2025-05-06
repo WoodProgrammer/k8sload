@@ -1,13 +1,15 @@
 package lib
 
 type TopologySpec struct {
-	Port         int                 `yaml:"port"`
-	Replicas     int                 `yaml:"replicas"`
-	AntiAffinity bool                `yaml:"antiAffinity"`
-	TopologyKeys []map[string]string `yaml:"topologyKeys"`
-	Args         []map[string]string `yaml:"args"`
-	Commands     []map[string]string `yaml:"commands"`
-	HostNetwork  bool                `yaml:"hostNetwork"`
+	Port          int                 `yaml:"port"`
+	Replicas      int                 `yaml:"replicas"`
+	AntiAffinity  bool                `yaml:"antiAffinity"`
+	TopologyKeys  []map[string]string `yaml:"topologyKeys"`
+	Args          []string            `yaml:"args"`
+	Commands      []string            `yaml:"commands"`
+	HostNetwork   bool                `yaml:"hostNetwork"`
+	ExporterImage string              `yaml:"exporterImage"`
+	Image         string              `yaml:"image"`
 }
 
 type Producer struct {

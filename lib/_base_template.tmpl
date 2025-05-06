@@ -18,8 +18,11 @@ spec:
       containers:
       - name: {{ .Topology.Producer.Name }}
         image: nginx
-        commands: {{ .Topology.Producer.Spec.Commands }}
-        args: {{ .Topology.Producer.Spec.Args }}
+        command: {{ .Topology.Producer.Spec.Commands }}
+        args:
+        {{- range $keyVal := .Topology.Producer.Spec.Args }}
+        - "{{ $keyVal }}"
+        {{- end }}
         ports:
         - containerPort: {{ .Topology.Producer.Spec.Port }}
 {{- if .Topology.Producer.Spec.AntiAffinity }}
@@ -55,11 +58,27 @@ spec:
         app: {{ .Topology.Consumer.Name }}
     spec:
       hostNetwork:  {{ .Topology.Consumer.Spec.HostNetwork }}
+      volumes:
+      - name: metrics-data
+        emptyDir: {}
       containers:
+      - name: {{ .Topology.Consumer.Name }}-exporter
+        image: {{ .Topology.Consumer.Spec.ExporterImage }}
+        volumeMounts:
+        - name: metrics-data
+          mountPath: /opt/metrics/
+        ports:
+        - containerPort: 9001
       - name: {{ .Topology.Consumer.Name }}
-        image: nginx
-        commands: {{ .Topology.Consumer.Spec.Commands }}
-        args: {{ .Topology.Consumer.Spec.Args }}
+        image: {{ .Topology.Consumer.Spec.Image }}
+        volumeMounts:
+        - name: metrics-data
+          mountPath: /opt/metrics/
+        command: {{ .Topology.Consumer.Spec.Commands }}
+        args:
+        {{- range $keyVal := .Topology.Consumer.Spec.Args }}
+        - "{{ $keyVal }}"
+        {{- end }}
         ports:
         - containerPort: {{ .Topology.Consumer.Spec.Port }}
 {{- if .Topology.Consumer.Spec.AntiAffinity }}
