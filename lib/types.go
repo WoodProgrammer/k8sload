@@ -6,7 +6,7 @@ type TopologySpec struct {
 	AntiAffinity  bool                `yaml:"antiAffinity"`
 	TopologyKeys  []map[string]string `yaml:"topologyKeys"`
 	Args          []string            `yaml:"args"`
-	Commands      []string            `yaml:"commands"`
+	Commands      []string            `yaml:"command"`
 	HostNetwork   bool                `yaml:"hostNetwork"`
 	ExporterImage string              `yaml:"exporterImage"`
 	Image         string              `yaml:"image"`

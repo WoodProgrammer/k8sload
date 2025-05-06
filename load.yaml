@@ -6,8 +6,8 @@ topology:
       hostNetwork: true
       port: 8080
       replicas: 2
-      exporterImage: nginx
-      image: nginx
+      exporterImage: emirozbir/k8sload-exporter:latest
+      image: emirozbir/k8sload:latest
       antiAffinity: true
       topologyKeys:
       - app: nginx
@@ -24,8 +24,8 @@ topology:
       replicas: 1
       command: ["iperf3"]
       args: ["-c", "localhost", "-p", "3000", "-J", ">", "metrics.json"]
-      exporterImage: nginx
-      image: nginx
+      exporterImage: emirozbir/k8sload-exporter:latest
+      image: emirozbir/k8sload:latest
       antiAffinity: false
       topologyKeys:
       - app: nginx

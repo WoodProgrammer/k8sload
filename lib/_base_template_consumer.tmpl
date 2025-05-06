@@ -31,7 +31,7 @@ spec:
         volumeMounts:
         - name: metrics-data
           mountPath: /opt/metrics/
-        command: {{ .Topology.Consumer.Spec.Commands }}
+        command: "{{ .Topology.Consumer.Spec.Commands }}"
         args:
         {{- range $keyVal := .Topology.Consumer.Spec.Args }}
         - "{{ $keyVal }}"
