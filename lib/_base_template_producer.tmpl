@@ -17,7 +17,7 @@ spec:
       hostNetwork:  {{ .Topology.Producer.Spec.HostNetwork }}
       containers:
       - name: {{ .Topology.Producer.Name }}
-        image: nginx
+        image: {{ .Topology.Producer.Spec.Image }}
         command: {{ .Topology.Producer.Spec.Commands }}
         args:
         {{- range $keyVal := .Topology.Producer.Spec.Args }}

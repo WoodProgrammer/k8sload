@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Topology.Producer.Name }}
+  namespace: {{ .Topology.Producer.Namespace }}
+  labels:
+    app: {{ .Topology.Producer.Name }}
+spec:
+  selector:
+    app: {{ .Topology.Producer.Name }}
+  ports:
+    - name: http
+      port: {{ .Topology.Producer.Spec.Port }}
+      targetPort: {{ .Topology.Producer.Spec.Port }}
+  type: ClusterIP

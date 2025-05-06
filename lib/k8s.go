@@ -2,7 +2,6 @@ package lib
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -33,7 +32,7 @@ func (k *KubernetesHandler) ApplyManifest(manifestDetails string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("The object is ", obj)
+
 	mapping, err := restMapper(k.Config).RESTMapping(gvk.GroupKind(), gvk.Version)
 	if err != nil {
 		return err

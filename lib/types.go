@@ -9,6 +9,7 @@ type TopologySpec struct {
 	Commands      []string            `yaml:"command"`
 	HostNetwork   bool                `yaml:"hostNetwork"`
 	ExporterImage string              `yaml:"exporterImage"`
+	ExporterPort  string              `yaml:"exporterPort"`
 	Image         string              `yaml:"image"`
 }
 

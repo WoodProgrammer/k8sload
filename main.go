@@ -43,8 +43,13 @@ func main() {
 	k8sClient := NewKubernetesClient()
 	ProducerManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_producer.tmpl")
 	manifestArr = append(manifestArr, ProducerManifest)
+	ProducerSvcManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_producer_svc.tmpl")
+	manifestArr = append(manifestArr, ProducerSvcManifest)
+
 	ConsumerManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_consumer.tmpl")
 	manifestArr = append(manifestArr, ConsumerManifest)
+	ConsumerSvcManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_consumer_svc.tmpl")
+	manifestArr = append(manifestArr, ConsumerSvcManifest)
 
 	for _, r := range manifestArr {
 		wg.Add(1)
