@@ -35,7 +35,7 @@ func NewKubernetesClient() lib.KubernetesClient {
 func main() {
 	log.Info().Msg("k8load v0.0.1")
 
-	//gk8sClient := NewKubernetesClient()
+	k8sClient := NewKubernetesClient()
 	output, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template.tmpl")
 
 	if err != nil {
@@ -43,9 +43,9 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println(output)
-	/*err = k8sClient.ApplyManifest(output)
+	err = k8sClient.ApplyManifest(output)
 	if err != nil {
 		log.Err(err).Msg("Error while running k8sClient.ApplyManifest()")
 		os.Exit(1)
-	}*/
+	}
 }
