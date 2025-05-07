@@ -13,7 +13,7 @@ var iperf3Metrics = prometheus.NewGaugeVec(
 		Name: "iperf3_metrics",
 		Help: "Metrics collected from iperf3 client metric output",
 	},
-	[]string{"metric"},
+	[]string{"metric", "name"},
 )
 
 func init() {

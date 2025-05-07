@@ -22,6 +22,7 @@ type Producer struct {
 type Topology struct {
 	Producer Producer `yaml:"producer"`
 	Consumer Consumer `yaml:"consumer"`
+	Name     string   `yaml:"name"`
 }
 
 type Config struct {

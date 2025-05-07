@@ -21,6 +21,9 @@ spec:
       containers:
       - name: {{ .Topology.Consumer.Name }}-exporter
         image: {{ .Topology.Consumer.Spec.ExporterImage }}
+        env:
+        - name: "LOAD_TEST_NAME"
+          value: "{{ .Topology.Name }}"
         volumeMounts:
         - name: metrics-data
           mountPath: /opt/metrics/

@@ -19,6 +19,13 @@ func (c *IPerfCollector) Describe(ch chan<- *prometheus.Desc) {
 
 func (c *IPerfCollector) Collect(ch chan<- prometheus.Metric) {
 	var intervals []Intervals
+	var testCaseName string
+
+	testCaseName = os.Getenv("LOAD_TEST_NAME")
+	if len(testCaseName) == 0 {
+		testCaseName = "default_load_test"
+	}
+
 	data, err := c.ParseMetricFile("metrics.json")
 
 	if err != nil {
@@ -42,17 +49,17 @@ func (c *IPerfCollector) Collect(ch chan<- prometheus.Metric) {
 			for _, s := range intervals {
 
 				for _, t := range s.Streams {
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Bytes), fmt.Sprintf("bytes_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.BitsPerSecond), fmt.Sprintf("bits_per_second_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.End), fmt.Sprintf("end_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.PMTU), fmt.Sprintf("pmtu_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.RTT), fmt.Sprintf("rtt_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Retransmits), fmt.Sprintf("retransmits_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Seconds), fmt.Sprintf("seconds_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.SndCwd), fmt.Sprintf("sndcwd_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.SndWnd), fmt.Sprintf("sndwnd_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Socket), fmt.Sprintf("sockets_streams_term_%d", term))
-					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Start), fmt.Sprintf("start_streams_term_%d", term))
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Bytes), fmt.Sprintf("bytes_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.BitsPerSecond), fmt.Sprintf("bits_per_second_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.End), fmt.Sprintf("end_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.PMTU), fmt.Sprintf("pmtu_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.RTT), fmt.Sprintf("rtt_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Retransmits), fmt.Sprintf("retransmits_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Seconds), fmt.Sprintf("seconds_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.SndCwd), fmt.Sprintf("sndcwd_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.SndWnd), fmt.Sprintf("sndwnd_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Socket), fmt.Sprintf("sockets_streams_term_%d", term), testCaseName)
+					ch <- prometheus.MustNewConstMetric(c.Desc, prometheus.GaugeValue, float64(t.Start), fmt.Sprintf("start_streams_term_%d", term), testCaseName)
 
 					fmt.Println(term)
 				}

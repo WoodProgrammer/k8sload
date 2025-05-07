@@ -66,7 +66,21 @@ then you can easily download the recent release and move it under a PATH on your
 $ kubectl load -f load.yaml
 ```
 
-🏗️ How It Works
+
+### Prometheus Integration
+
+
+```yaml
+scrape_configs:
+  - job_name: "k8sload"
+    metrics_path: "/metrics"   # change if your exporter exposes metrics on a different path
+    scheme: "http"            # or "http" depending on your exporter
+    static_configs:
+      - targets:
+        - "localhost:9100"  # your exporter IP:port or domain
+```
+
+## How It Works
 
 The producer pod starts an iperf3 server.
 
