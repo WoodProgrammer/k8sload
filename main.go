@@ -48,14 +48,14 @@ func LoadK8S() {
 	semaphore := make(chan struct{}, maxConcurrency)
 
 	k8sClient := NewKubernetesClient()
-	ProducerManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_producer.tmpl")
+	ProducerManifest, err := lib.GenerateManifestFile(file, lib.ProducerDeploymentTemplate)
 	manifestArr = append(manifestArr, ProducerManifest)
-	ProducerSvcManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_producer_svc.tmpl")
+	ProducerSvcManifest, err := lib.GenerateManifestFile(file, lib.ProducerSvcTemplate)
 	manifestArr = append(manifestArr, ProducerSvcManifest)
 
-	ConsumerManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_consumer.tmpl")
+	ConsumerManifest, err := lib.GenerateManifestFile(file, lib.ConsumerDeploymentTemplate)
 	manifestArr = append(manifestArr, ConsumerManifest)
-	ConsumerSvcManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_consumer_svc.tmpl")
+	ConsumerSvcManifest, err := lib.GenerateManifestFile(file, lib.ConsumerSvcTemplate)
 	manifestArr = append(manifestArr, ConsumerSvcManifest)
 
 	for _, r := range manifestArr {
