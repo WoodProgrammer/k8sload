@@ -1,4 +1,5 @@
 topology:
+  name: load-test-multiple-node
   producer:
     name: producer
     namespace: producer
