@@ -2,10 +2,8 @@ name: Build and Push Exporter Docker Image
 
 on:
   push:
-    branches:
-      - main
-      - k8sload-exporter-dockerfile
-      - build
+    tags:
+      - "*"
 
 jobs:
   build-and-push-exporter-image:
