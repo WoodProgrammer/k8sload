@@ -52,9 +52,6 @@ func (k *KubernetesHandler) ApplyManifest(manifestDetails string) error {
 	if err != nil {
 		return err
 	}
-
-	log.Info().Msg("Manifest applied successfully.")
-
 	return nil
 }
 
