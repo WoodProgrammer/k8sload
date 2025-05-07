@@ -64,11 +64,32 @@ then you can easily download the recent release and move it under a PATH on your
 
 ```sh
 $ kubectl load -f load.yaml
+
+```
+<img src="img/cli.png"></img>
+
+```sh
+root@ubuntu-s-2vcpu-2gb-90gb-intel-fra1-01:~# kubectl get po -n producer
+NAME                        READY   STATUS    RESTARTS   AGE
+producer-788f7565d5-2gfb8   1/1     Running   0          9m49s
+producer-788f7565d5-2wxvz   0/1     Pending   0          9m49s
 ```
 
+The producer pods will spin up an iperf3 server and it basically wait for the load.
+
+
+Let's check the sample output in consumer side;
+
+```sh
+root@ubuntu-s-2vcpu-2gb-90gb-intel-fra1-01:~# kubectl get po -n consumer
+
+NAME                        READY   STATUS    RESTARTS   AGE
+consumer-6fc7d77ddb-drb4n   2/2     Running   0          5s
+```
+
+Consumer pods will run the the iperf3 command what you have passed for load test scenario.
 
 ### Prometheus Integration
-
 
 ```yaml
 scrape_configs:
