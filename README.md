@@ -60,7 +60,7 @@ topology:
         az: us-west-1b
 ```
 
-then you can easily download the recent release and move it under a PATH on your local
+then you can easily download the recent release and move it under a PATH on your local with the name `kubectl-load`
 
 ```sh
 $ kubectl load -f load.yaml
