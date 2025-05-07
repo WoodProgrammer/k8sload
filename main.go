@@ -3,11 +3,19 @@ package main
 import (
 	"os"
 	"sync"
+	"time"
 
 	lib "github.com/WoodProgrammer/k8sload/lib"
+	"github.com/common-nighthawk/go-figure"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/clientcmd"
+)
+
+var (
+	file string
 )
 
 func NewKubernetesClient() lib.KubernetesClient {
@@ -32,23 +40,22 @@ func NewKubernetesClient() lib.KubernetesClient {
 	}
 }
 
-func main() {
+func LoadK8S() {
 	var manifestArr []string
-	log.Info().Msg("k8load v0.0.1")
 	maxConcurrency := 2
 
 	var wg sync.WaitGroup
 	semaphore := make(chan struct{}, maxConcurrency)
 
 	k8sClient := NewKubernetesClient()
-	ProducerManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_producer.tmpl")
+	ProducerManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_producer.tmpl")
 	manifestArr = append(manifestArr, ProducerManifest)
-	ProducerSvcManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_producer_svc.tmpl")
+	ProducerSvcManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_producer_svc.tmpl")
 	manifestArr = append(manifestArr, ProducerSvcManifest)
 
-	ConsumerManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_consumer.tmpl")
+	ConsumerManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_consumer.tmpl")
 	manifestArr = append(manifestArr, ConsumerManifest)
-	ConsumerSvcManifest, err := lib.GenerateManifestFile("load.yaml", "lib/_base_template_consumer_svc.tmpl")
+	ConsumerSvcManifest, err := lib.GenerateManifestFile(file, "lib/_base_template_consumer_svc.tmpl")
 	manifestArr = append(manifestArr, ConsumerSvcManifest)
 
 	for _, r := range manifestArr {
@@ -69,7 +76,50 @@ func main() {
 				log.Err(err).Msg("Error while running k8sClient.ApplyManifest()")
 				os.Exit(1)
 			}
+			log.Info().Msgf("Manifest applied successfully")
 		}(r)
 	}
 	wg.Wait()
+	log.Info().Msgf("Please check the details on prometheus exposed services on consumer and producer side as well.")
+
+}
+func main() {
+
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}
+	consoleWriter.FormatLevel = func(i interface{}) string {
+		// Add colors to log level
+		switch i {
+		case "debug":
+			return "\x1b[36mDEBUG\x1b[0m"
+		case "info":
+			return "\x1b[32mINFO\x1b[0m"
+		case "warn":
+			return "\x1b[33mWARN\x1b[0m"
+		case "error":
+			return "\x1b[31mERROR\x1b[0m"
+		default:
+			return "\x1b[37m" + i.(string) + "\x1b[0m"
+		}
+	}
+	log.Logger = zerolog.New(consoleWriter).With().Timestamp().Logger()
+
+	asciiTitle := figure.NewFigure("K8sLoad", "", true)
+	asciiTitle.Print()
+
+	var rootCmd = &cobra.Command{
+		Use:   "k8sload",
+		Short: "Kubernetes plugin to spin up test cases",
+		Run: func(cmd *cobra.Command, args []string) {
+			LoadK8S()
+		},
+	}
+	rootCmd.Flags().StringVarP(&file, "file", "F", file, "The k8sload base yaml file")
+
+	rootCmd.MarkFlagRequired("file")
+
+	if err := rootCmd.Execute(); err != nil {
+		log.Err(err).Msg("CLI execution failed")
+		os.Exit(1)
+	}
+
 }

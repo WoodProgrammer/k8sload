@@ -52,20 +52,17 @@ func (k *KubernetesHandler) ApplyManifest(manifestDetails string) error {
 	if err != nil {
 		return err
 	}
-
-	log.Info().Msg("Manifest applied successfully.")
-
 	return nil
 }
 
 func restMapper(config *rest.Config) meta.RESTMapper {
 	dc, err := discovery.NewDiscoveryClientForConfig(config)
 	if err != nil {
-		panic(err)
+		log.Err(err).Msg("There is an error while running discovery.NewDiscoveryClientForConfig()")
 	}
 	gr, err := restmapper.GetAPIGroupResources(dc)
 	if err != nil {
-		panic(err)
+		log.Err(err).Msg("There is an error while running restmapper.GetAPIGroupResources()")
 	}
 	return restmapper.NewDiscoveryRESTMapper(gr)
 }
