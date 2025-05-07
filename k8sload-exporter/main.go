@@ -24,7 +24,7 @@ func NewIperf3Collector() *IPerfCollector {
 	return &IPerfCollector{
 		Desc: prometheus.NewDesc("iperf3_metric",
 			"Iperf3 v2 metrics",
-			[]string{"metric"},
+			[]string{"metric", "name"},
 			nil,
 		),
 	}
